@@ -59,18 +59,18 @@ Run `docker-compose up db`, and wait for the initialization to be over. You can 
 
 #### 2.2 Run migrate management command to setup non-existing tables 
 
-    docker-compose run web python manage.py migrate
+    $ docker-compose run web python manage.py migrate
 
 #### 2.3 Add a superuser
 
-    docker-compose run web python manage.py createsuperuser
+    $ docker-compose run web python manage.py createsuperuser
 
 You will be asked for username, email and password (twice). Remember that
 username and password.
 
 ### 3. Try running the server
 
-    docker-compose up
+    $ docker-compose up
 
 Try opening http://localhost:8000/ in your browser.
 
@@ -88,7 +88,7 @@ the superuser you created earlier (in case you don't see an error page here).
 
 Run management command
 
-    ./manage.py create_dummy_data 5 --flush True
+    $ docker-compose run web python manage.py create_dummy_data 5 --flush True
 
 with activated virtualenv to get 5 days of dummy data and delete tables in advance.
 
@@ -102,11 +102,11 @@ are run with `py.test`, and functional/behave tests that are run with `selenium`
 
 To run unit tests, run the following command (with your virtual env activated, see 3.)
 
-    $ py.test -v [/path/to/volunteer_planner.git/]
+    $ docker-compose run web py.test -v [/path/to/volunteer_planner.git/]
 
 If you want to generate a coverage report as well, run
 
-    $ py.test --cov=. --cov-report html --cov-report term-missing --no-cov-on-fail -v
+    $ docker-compose run web py.test --cov=. --cov-report html --cov-report term-missing --no-cov-on-fail -v
 
 This generates a nice HTML coverage page, to poke around which can be found at `/path/to/volunteer_planner.git/htmlcov/index.html`. 
 

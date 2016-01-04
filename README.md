@@ -30,43 +30,9 @@ database.
 
 ## Project setup for development
 
-### 0. Prerequisites (Ubuntu 14.04 example) 
+### 0. Install docker
 
-If your machine is setup to work on Django projects, you might skip this step.
-
-#### 0.1 Installing required OS packages
-
-    sudo apt-get install python-dev python-pip git npm
-
-This will install Python libraries and Git.
-
-#### 0.2 Using MySQL locally (optional)
-
-Using MySQL locally for development is optional.
-
-#### 0.2.1 Installing MySQL (optional) 
-
-If you are going to use a local MySQL server, additionally install
-
-    sudo apt-get install libmysqlclient-dev mysql-client mysql-server
-
-This will install MySQL server, it will ask you to set a root password
-[ROOT_PASSWORD] for the MySQL server, if you haven't already set up MySQL in the
-past. Remember the password.
-
-#### 0.2.2 Creating a local MySQL database and user (optional)
-
-Open the MySQL shell
- 
-    mysql -u root -p
-
-and execute following queries to setup the DB 
-
-    CREATE DATABASE volunteer_planner;
-    GRANT ALL PRIVILEGES ON volunteer_planner.* to vp identified by 'volunteer_planner';
-
-*Note*: For the local environment, the DB username is assumed to be 'vp'
-and their password is assumed to be 'volunteer_planner'.
+Follow [the instructions](https://docs.docker.com/engine/installation/) relevant to your operating system.
 
 ### 1. Fork us on GitHub
 
@@ -81,94 +47,30 @@ Please do Pull Requests against the [`develop` branch](https://github.com/volunt
 If you have questions concerning our workflow please read the 
 [Development Rules wiki page](https://github.com/volunteer-planner/volunteer_planner/wiki/DevelopmentRules).
 
-### 2. Setup your virtual environment
+### 2. Prepare the DB
 
-#### 2.1. Create a virtual env
+By default, the application will be using MySQL. If you prefer PostgreSQL, edit
+the `Dockerfile` and `docker-compose.yml` files, uncommenting the PostgreSQL
+related parts, and commenting out the MySQL related ones.
 
-Create an virtualenv (follow the installation guide at [virtualenvwrapper](https://virtualenvwrapper.readthedocs.org/) 
-to install virtualenvwrapper):
-    
-    $ mkvirtualenv vp
+#### 2.1 Initialize the DB container
 
-*Note*: using `vp` as your virtualenv's name is a recommendation, not a requirement.
+Run `docker-compose up db`, and wait for the initialization to be over. You can now kill the container with `CTRL-c`.
 
-The virtual environment should be enabled afterwards. 
-For starting/continuing working on the project using the virtualenv, 
-activate the virtual env using
+#### 2.2 Run migrate management command to setup non-existing tables 
 
-    $ workon vp
+    docker-compose run web python manage.py migrate
 
-#### 2.2 Installing required python packages
+#### 2.3 Add a superuser
 
-Update pip
- 
-    pip install -U pip
-
-For a local sqlite DB install
-
-    pip install -r /path/to/volunteer_planner.git/requirements/dev.txt
-
-or, if you intend to use MySQL locally, install
-
-    pip install -r /path/to/volunteer_planner.git/requirements/dev_mysql.txt
-
-*Note*: `/path/to/volunteer_planner.git` means the path of your local clone of the 
-GitHub project. Replace it accordingly with the actual path.
-
-#### 2.3 Setup your virtualenv `postactivate` hook (optional)
-
-This step is optional but recommended. 
-
-Every time, a virtualenv is activated with virtualenvwrappers' `workon` command, 
-a `postactivate` script is executed. This comes in handy to autmatically setup 
-a projects' environment variables and automate some reoccuring tasks. 
-For more details on virtualenvwrapper hooks, see [virtualenvwrapper: Per-User Customization](http://virtualenvwrapper.readthedocs.org/en/latest/scripts.html). 
-
-You might consider to use this example `postactivate` script 
-(located at `$VIRTUAL_ENV/bin/postactivate`)
-
-    #!/bin/bash
-    # This hook is run after this virtualenv is activated.
-    ​
-    export DJANGO_SETTINGS_MODULE="volunteer_planner.settings.local"
-    cd /path/to/volunteer_planner.git/
-    ​
-    git fetch --all
-    git status
-
-*Note:* You'll need to re-active your virtual environment after each change to it's `postactivate` hook to take effect. Just run `workon vp` again, to make sure your current venv session has executed the `postactivate` hook.
-
-#### 2.3.1 ... settings module for using MySQL
-
-When you prefer to use MySQL locally, you'll probably need to use the settings module `volunteer_planner.settings.local_mysql` instead of `volunteer_planner.settings.local`.
-
-#### 2.3.2 Setup your local environment (optional)
-
-Also, if you need to use non-default settings values, setting (exporting) the 
-environment variables in your virtualenvs' `postactivate` hook is a good place 
-if you're not using an IDE to configure your environment variables. 
-
-### 3. Initialize the database with Django
-
-Activate your env and change dir to your local forks' git repository (if not done yet).
- 
-    workon vp
-    cd /path/to/volunteer_planner.git
-
-#### 3.1 Run migrate management command to setup non-existing tables 
-    
-    ./manage.py migrate
-
-### 3.2 Add a superuser
-    
-    ./manage.py createsuperuser
+    docker-compose run web python manage.py createsuperuser
 
 You will be asked for username, email and password (twice). Remember that
 username and password.
 
-### 4. Try running the server
+### 3. Try running the server
 
-    ./manage.py runserver
+    docker-compose up
 
 Try opening http://localhost:8000/ in your browser.
 

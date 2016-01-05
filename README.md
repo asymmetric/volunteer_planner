@@ -102,7 +102,7 @@ are run with `py.test`, and functional/behave tests that are run with `selenium`
 
 To run unit tests, run the following command (with your virtual env activated, see 3.)
 
-    $ docker-compose run web py.test -v [/path/to/volunteer_planner.git/]
+    $ docker-compose run web py.test -v
 
 If you want to generate a coverage report as well, run
 
